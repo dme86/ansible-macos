@@ -21,3 +21,4 @@ packages:
 
 casks:
   - google-chrome
+  - iterm2
