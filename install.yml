@@ -1,0 +1,12 @@
+---
+- name: Setup dan's environment
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+
+    - name: Install packages
+      homebrew:
+        name: "{{ item }}"
+        state: present
+      with_items: "{{ (lookup('file', 'packages_common.yml') | from_yaml)['packages'] }}"

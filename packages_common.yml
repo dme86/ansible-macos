@@ -1,0 +1,20 @@
+---
+packages:
+  - git
+  - fish
+  - neovim
+  - lazygit
+  - fzf
+  - ripgrep
+  - k9s
+  - htop
+  - jq
+  - awscli
+  - exa
+  - ansible
+  - terraform
+  - terragrunt
+  - asdf
+  - tree
+  - neovim
+  - universal-ctags
