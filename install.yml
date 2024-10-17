@@ -1,5 +1,5 @@
 ---
-- name: Setup dan's environment
+- name: Setup Dan's environment
   hosts: localhost
   gather_facts: no
   vars:
@@ -7,25 +7,63 @@
     home_dir: "/Users/{{ user_name }}"
     nvim_dir: "{{ home_dir }}/.config/nvim"
     fish_dir: "{{ home_dir }}/.config/fish"
+    tty_dir:  "{{ home_dir }}/.config/alacritty"
+    tmux_dir: "{{ home_dir }}/.config/tmux"
+    common_packages: "{{ (lookup('file', 'packages_common.yml') | from_yaml)['packages'] }}"
+    common_casks: "{{ (lookup('file', 'packages_common.yml') | from_yaml)['casks'] }}"
+    private_packages: "{{ (lookup('file', 'packages_private.yml') | from_yaml)['packages'] | default([]) }}"
+    private_casks: "{{ (lookup('file', 'packages_private.yml') | from_yaml)['casks'] | default([]) }}"
 
   tasks:
 
-    - name: Install brew packages
-      homebrew:
-        name: "{{ item }}"
-        state: present
-      with_items: "{{ (lookup('file', 'packages_common.yml') | from_yaml)['packages'] }}"
+    - name: Check if Homebrew is installed
+      command: /opt/homebrew/bin/brew --version
+      register: brew_installed
+      ignore_errors: yes
 
-    - name: Install cask packages
+    - name: Install Homebrew
+      shell: |
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      when: brew_installed.rc != 0
+
+    - name: Install common and private packages
       homebrew:
         name: "{{ item }}"
         state: present
-      with_items: "{{ (lookup('file', 'packages_common.yml') | from_yaml)['casks'] }}"
+      with_items: "{{ common_packages + private_packages }}"
+      when: setup_type == 'private' or setup_type == 'common'
+
+    - name: Install common and private cask packages
+      homebrew_cask:
+        name: "{{ item }}"
+        state: present
+      with_items: "{{ common_casks + private_casks }}"
+      when: setup_type == 'private' or setup_type == 'common'
 
     - name: Clone neovim config
       git:
-        repo: https://github.com/dme86/neovim
+        repo: https://github.com/dme86/neovim.git
         dest: "{{ nvim_dir }}"
+        clone: yes
+        update: yes
+        force: yes
+        depth: 1
+      become_user: "{{ user_name }}"
+
+    - name: Clone Alacritty config
+      git:
+        repo: https://github.com/dme86/alacritty.git
+        dest: "{{ tty_dir }}"
+        clone: yes
+        update: yes
+        force: yes
+        depth: 1
+      become_user: "{{ user_name }}"
+
+    - name: Clone tmux config
+      git:
+        repo: https://github.com/dme86/tmux.git
+        dest: "{{ tmux_dir }}"
         clone: yes
         update: yes
         force: yes
@@ -34,10 +72,11 @@
 
     - name: Clone fish config
       git:
-        repo: https://github.com/dme86/fish
+        repo: https://github.com/dme86/fish.git
         dest: "{{ fish_dir }}"
         clone: yes
         update: yes
         force: yes
         depth: 1
       become_user: "{{ user_name }}"
+

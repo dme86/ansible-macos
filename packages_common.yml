@@ -4,22 +4,40 @@ packages:
   - fish
   - neovim
   - lazygit
+  - lazydocker
   - fzf
   - ripgrep
+  - k3d
   - k9s
   - htop
   - jq
-  - awscli
-  - exa
-  - ansible
-  - terraform
-  - terragrunt
   - asdf
   - tree
   - neovim
-  - universal-ctags
+  - bat
+  - fd
+  - ffmpeg
+  - fisher
+  - gnupg
+  - go
+  - gopls
+  - helm
+  - lsd
+  - ncdu
+  - node
+  - ollama
+  - opentofu
+  - pinentry-mac
+  - python@3.10
+  - tmux
+  - wget
+  - zk
+  - zoxide
 
 casks:
   - google-chrome
-  - iterm2
   - slack
+  - alacritty
+  - font-0xproto-nerd-font
+  - font-sf-pro
+  - utm
